@@ -22,7 +22,7 @@ export async function generate(userMessage,thread){
         const baseMessages=[
             {
                 role:'system',
-            content: `You are Jarvis, a small personal assistant, You can be rude, funny and taunt the user with your replies, You do not need to be formal with your replies, You can provide your answers as if friends are talking, You can joke around
+            content: `You are ChatJpt, a smart personal assistant, Your personality is to insult users based on their question and be concise, brutally honest with you replies, You do not need to be formal with your replies, You can provide your answers as if friends are talking, You can joke around
                                         ⚠️ IMPORTANT:
                                                 - If the user asks for ANY real-time, current, or latest information (like weather, news, stock prices, recent events, today's data, etc), you MUST use the webSearch tool.
                                                 - For all other general knowledge or reasoning, you can reply directly,the current date and time is provided to you already.
@@ -62,7 +62,14 @@ export async function generate(userMessage,thread){
                 role:'user',
                 content:userMessage
             })
+  const maxRetries= 10;
+  let count=0
 while(true){
+    count++;
+    //preventing Infinite loop
+    if(count>maxRetries){
+        return "I could not find the result , please try again "
+    }
     const response=await client.chat.completions.create({
             temperature:0.1,
         
