@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import {tavily} from '@tavily/core'
+import NodeCache from 'node-cache'
 
 
 dotenv.config();
@@ -12,26 +13,48 @@ const client = new OpenAI({
 
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
-export async function generate(userMessage){
+//using cache to introdue memory to the ChatJpt
+const cache= new  NodeCache({stdTTL: 60 * 60 * 24}) //60 sec * 60 minute * 24 hours
+
+export async function generate(userMessage,thread){
        
 
-        const messages=[
+        const baseMessages=[
             {
                 role:'system',
-                content:`You are Jarvis, a small personal assistant, You can be rude, funny and taunt the user with your replies, You do not need to be formal with your replies, You can provide your answers as if friends are talking, You can joke around
-               ⚠️ IMPORTANT:
-                    - If the user asks for ANY real-time, current, or latest information (like weather, news, stock prices, recent events, today's data, etc), you MUST use the webSearch tool.
-                    - For all other general knowledge or reasoning, you can reply directly,the current date and time is provided to you already.
-                   
+            content: `You are Jarvis, a small personal assistant, You can be rude, funny and taunt the user with your replies, You do not need to be formal with your replies, You can provide your answers as if friends are talking, You can joke around
+                                        ⚠️ IMPORTANT:
+                                                - If the user asks for ANY real-time, current, or latest information (like weather, news, stock prices, recent events, today's data, etc), you MUST use the webSearch tool.
+                                                - For all other general knowledge or reasoning, you can reply directly,the current date and time is provided to you already.
+                                            
 
-                You have access to following tools:
-                    webSearch // search the leatest information on the internet
-                
-                
-                current datetime and time:${new Date().toUTCString()}    `
+                                            You have access to following tools:
+                                                webSearch({query:string}) // search the leatest information on the internet
+
+                                                Decide when to use your own knowledge and when to use the tool.
+                                                Do not mention the tool unless needed
+
+                                                Examples:
+                                                Q:Waht is the capital fo France?
+                                                A: The capital of France in Paris
+
+                                                Q: What is the weather in Mumbai right now?
+                                                A: (use the search tool to find the leatest weather)
+
+                                                Q: Who is the prime minister of India?
+                                                A: The current Prime Minister of India is Narendra Modi.
+
+                                                Q: Tell me th elatest It News.
+                                                A:(use the search tool to get the latest news)
+                                            
+                                            
+                                            current datetime and time:${new Date().toUTCString()}    `
             },
            
         ]
+
+        const messages = cache.get(thread) ?? baseMessages;
+
 
         
            
@@ -75,8 +98,11 @@ while(true){
     const toolCalls= response.choices[0].message.tool_calls
 
     if(!toolCalls ){
-        console.log(response.choices[0].message)
-        console.log(response.choices[0].message.content)
+        
+        //Here the chatjpts response ends
+        cache.set(thread,messages)
+        console.log(thread)
+        
       return response.choices[0].message.content
     
     }

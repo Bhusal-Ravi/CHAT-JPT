@@ -1,11 +1,16 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown';
 
 function App() {
   const [message, setMessage] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(false);
+  const thread = useMemo(() => (
+    Date.now().toString(36) + Math.random().toString(36).substring(2, 8)
+  ), [])
+
+
 
   async function llmCall() {
     try {
@@ -17,7 +22,8 @@ function App() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: userInput.trim()
+          message: userInput.trim(),
+          thread: thread
         })
 
       })

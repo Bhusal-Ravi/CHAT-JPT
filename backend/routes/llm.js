@@ -5,7 +5,12 @@ const router = express.Router();
 router.post('/chat',async  (req,res)=>{
     try{
         const message= req.body.message
-        const response=await generate(message)
+        const thread = req.body.thread
+        if(!message || !thread){
+            res.status(400).json({error:true,message:"All fields are required"})
+            return
+        }
+        const response=await generate(message,thread)
 
         res.status(200).json({error:false,message:response})
     }catch(error){
