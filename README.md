@@ -1,4 +1,4 @@
-
+Llm with web search tool call integrated
 <img width="1405" height="925" alt="Screenshot 2025-09-29 214219" src="https://github.com/user-attachments/assets/42e894a1-0401-47b2-bc38-b67f58560ddb" />
 <img width="954" height="350" alt="Screenshot 2025-09-29 214243" src="https://github.com/user-attachments/assets/fba54ea6-3960-41bf-98a9-8623af062e77" />
 <img width="1170" height="936" alt="Screenshot 2025-09-29 214348" src="https://github.com/user-attachments/assets/da9af63d-9a86-4856-bcdb-d1509e601807" />
